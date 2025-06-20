@@ -1,0 +1,17 @@
+{
+  "name": "ai_web_project",
+  "version": "1.0.0",
+  "description": "This is the backend of my note and task management app which also has integration with AI",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "javascript",
+    "js",
+    "ai",
+    "backend"
+  ],
+  "author": "Aryan",
+  "license": "ISC"
+}
