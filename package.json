@@ -2,9 +2,10 @@
   "name": "ai_web_project",
   "version": "1.0.0",
   "description": "This is the backend of my note and task management app which also has integration with AI",
-  "main": "index.js",
+  "main": "server.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon source/server.js"
   },
   "keywords": [
     "javascript",
@@ -13,5 +14,13 @@
     "backend"
   ],
   "author": "Aryan",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.16.0"
+  }
 }
