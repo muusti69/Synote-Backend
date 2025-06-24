@@ -68,4 +68,8 @@ userSchema.methods.generateRefreshToken = function () {
   );
 };
 
+userSchema.methods.checkPassword=async function(password){
+  return await bcrypt.compare(password,this.password)
+}
+
 export const User = mongoose.model("User", userSchema);

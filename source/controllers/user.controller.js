@@ -4,6 +4,13 @@ import { apiResponse } from "../utits/apiResponse.js";
 import { asyncHandler } from "../utits/asyncHandler.js";
 import jwt from "jsonwebtoken";
 
+const options = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "Strict",
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+};
+
 const generateAccessAndRefrehToken = async (userId) => {
   try {
     const user = await User.findById(userId);
@@ -20,7 +27,7 @@ const generateAccessAndRefrehToken = async (userId) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
+  let { name, email, password } = req.body;
 
   try {
     name = name?.trim();
@@ -71,4 +78,106 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
-export { registerUser };
+const loginUser = asyncHandler(async (req, res) => {
+  let { email, password } = req.body;
+
+  email = email?.trim();
+  password = password?.trim();
+
+  if (!email || !password)
+    throw new apiError(400, "Provide both email and password");
+
+  const user = await User.findOne({ email });
+
+  if (!user) throw new apiError(409, "User does not exist");
+
+  const isPasswordCorrect = await user.checkPassword(password);
+
+  if (!isPasswordCorrect) throw new apiError(401, "Incorrect Password");
+
+  const { accessToken, refreshToken } = await generateAccessAndRefrehToken(
+    user._id
+  );
+
+  const userObj = user.toObject();
+  delete userObj.password;
+  delete userObj.refreshToken;
+
+  res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new apiResponse(
+        200,
+        {
+          user: userObj,
+          accessToken,
+          refreshToken,
+        },
+        "User Logged In Successfully"
+      )
+    );
+});
+
+const logoutUser = asyncHandler(async (req, res) => {
+  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: { refreshToken: undefined },
+    },
+    {
+      new: true,
+    }
+  );
+
+  return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new apiResponse(200, {}, "User Logged Out"));
+});
+
+const refreshAccessToken = asyncHandler(async (req, res) => {
+  try {
+    const incomingRefereshToken =
+      req.cookies.refreshToken || req.body.refreshToken;
+
+    if (!incomingRefereshToken) throw new apiError(401, "Unauthorized Request");
+
+    const decodedToken = jwt.verify(
+      incomingRefereshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
+    const user =await User.findOne(decodedToken?._id);
+
+    if (!user) throw new apiError(401, "Invalid Refresh Token");
+
+    if (incomingRefereshToken !== user?.refreshToken)
+      throw new apiError(401, "Refresh Token expired or invalid");
+
+    const { accessToken, newRefreshToken } = await generateAccessAndRefrehToken(
+      user._id
+    );
+
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", newRefreshToken, options)
+      .json(
+        new apiResponse(
+          200,
+          {
+            accessToken,
+            refreshToken: newRefreshToken,
+          },
+          "Access Token Refreshed"
+        )
+      );
+  } catch (error) {
+    throw new apiError(401, error?.message || "Invalid Refresh Token");
+  }
+});
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken };
