@@ -1,7 +1,7 @@
 import { User } from "../models/user.model.js";
-import { apiError } from "../utits/apiError.js";
-import { apiResponse } from "../utits/apiResponse.js";
-import { asyncHandler } from "../utits/asyncHandler.js";
+import { apiError } from "../utils/apiError.js";
+import { apiResponse } from "../utils/apiResponse.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
 
 const options = {
@@ -150,7 +150,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       process.env.REFRESH_TOKEN_SECRET
     );
 
-    const user =await User.findOne(decodedToken?._id);
+    const user =await User.findOne({_id:decodedToken?._id});
 
     if (!user) throw new apiError(401, "Invalid Refresh Token");
 
@@ -180,4 +180,21 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken };
+const getCurrentUser = asyncHandler(async (req, res) => {
+  if (!req.user) {
+    throw new apiError(401, "User not authenticated");
+  }
+
+  const { _id, name, email } = req.user;
+
+  return res.status(200).json(
+    new apiResponse(
+      200,
+      { user: { _id, name, email } },
+      "Current user fetched successfully"
+    )
+  );
+});
+
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken,getCurrentUser };

@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import limitter from "./constant.js";
+import { limitter } from "./constant.js";
 
 const app = express();
 
@@ -15,5 +15,11 @@ app.use(
 app.use(express.json({ limit: limitter }));
 app.use(express.urlencoded({ extended: true, limit: limitter }));
 app.use(cookieParser());
+
+// import routes
+import userRouter from "./routes/user.routes.js";
+
+// routes declaration
+app.use("/api/v1/users", userRouter);
 
 export { app };
