@@ -71,7 +71,9 @@ const updateNote = asyncHandler(async (req, res) => {
   }
 
   if (!isModified) {
-    return res.status(200).json(new apiResponse(200, note, "No changes detected"));
+    return res
+      .status(200)
+      .json(new apiResponse(200, note, "No changes detected"));
   }
 
   await note.save();
@@ -81,5 +83,20 @@ const updateNote = asyncHandler(async (req, res) => {
     .json(new apiResponse(200, note, "Note updated successfully"));
 });
 
+const deleteNote = asyncHandler(async (req, res) => {
+  const noteId = req.params.id;
+  const userId = req.user?._id;
 
-export { createNote, getNotes, getNoteById,updateNote };
+  const note = await Notes.findOne({ _id: noteId, userId });
+
+  if (!note) {
+    throw new apiError(404, "Note not found");
+  }
+
+  await note.deleteOne();
+
+  return res
+    .status(200)
+    .json(new apiResponse(200, {}, "Note deleted successfully"));
+});
+export { createNote, getNotes, getNoteById, updateNote,deleteNote };
