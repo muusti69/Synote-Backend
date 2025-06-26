@@ -19,9 +19,11 @@ app.use(cookieParser());
 // import routes
 import userRouter from "./routes/user.routes.js";
 import notesRouter from "./routes/notes.routes.js";
+import tasksRouter from "./routes/tasks.routes.js";
 
 // routes declaration
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/notes", notesRouter);
+app.use("/api/v1/tasks", tasksRouter);
 
 export { app };

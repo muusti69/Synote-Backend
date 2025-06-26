@@ -26,7 +26,7 @@ const taskSchema = new Schema(
   }
 );
 
-taskSchema.pre("findOneAndDelete", async function (next) {
+taskSchema.pre("deleteOne", async function (next) {
   const taskId = this.getQuery()._id;
   await Subtask.deleteMany({ taskId });
   next();
