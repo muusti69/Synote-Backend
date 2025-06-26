@@ -47,4 +47,39 @@ const getNoteById = asyncHandler(async (req, res) => {
     .json(new apiResponse(200, note, "Fetched the specific note"));
 });
 
-export { createNote, getNotes, getNoteById };
+const updateNote = asyncHandler(async (req, res) => {
+  const noteId = req.params.id;
+  const userId = req.user?._id;
+  const { title, content } = req.body;
+
+  const note = await Notes.findOne({ _id: noteId, userId });
+
+  if (!note) {
+    throw new apiError(404, "Note not found");
+  }
+
+  let isModified = false;
+
+  if (title && title.trim() !== note.title) {
+    note.title = title.trim();
+    isModified = true;
+  }
+
+  if (content && content.trim() !== note.content) {
+    note.content = content.trim();
+    isModified = true;
+  }
+
+  if (!isModified) {
+    return res.status(200).json(new apiResponse(200, note, "No changes detected"));
+  }
+
+  await note.save();
+
+  return res
+    .status(200)
+    .json(new apiResponse(200, note, "Note updated successfully"));
+});
+
+
+export { createNote, getNotes, getNoteById,updateNote };
