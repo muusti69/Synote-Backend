@@ -101,4 +101,24 @@ const deleteTask = asyncHandler(async (req, res) => {
 
   res.status(200).json(new apiResponse(200, {}, "Task deleted successfully"));
 });
-export { createTask, getTasks, getTaskById, updateTask, deleteTask };
+
+const getTasksWithSubtasks = asyncHandler(async (req, res) => {
+  const userId = req.user?._id;
+
+  const tasks = await Task.find({ userId })
+    .sort({ updatedAt: -1 })
+    .populate("subtasks");
+
+  return res
+    .status(200)
+    .json(new apiResponse(200, tasks, "Tasks with subtasks fetched"));
+});
+
+export {
+  createTask,
+  getTasks,
+  getTaskById,
+  updateTask,
+  deleteTask,
+  getTasksWithSubtasks,
+};

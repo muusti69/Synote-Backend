@@ -27,5 +27,4 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/notes", notesRouter);
 app.use("/api/v1/tasks", tasksRouter);
 app.use("/api/v1/tasks/:id/subtask", subtaskRouter);
-
 export { app };

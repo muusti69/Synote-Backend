@@ -26,11 +26,19 @@ const taskSchema = new Schema(
   }
 );
 
+taskSchema.virtual("subtasks", {
+  ref: "Subtask",
+  localField: "_id",
+  foreignField: "taskId",
+});
+
+taskSchema.set("toObject", { virtuals: true });
+taskSchema.set("toJSON", { virtuals: true });
+
 taskSchema.pre("deleteOne", async function (next) {
   const taskId = this.getQuery()._id;
   await Subtask.deleteMany({ taskId });
   next();
 });
-
 
 export const Task = mongoose.model("Task", taskSchema);
