@@ -3,7 +3,6 @@ import { apiError } from "../utils/apiError.js";
 
 export const summarizeNote = async (noteTitle, noteContent) => {
   try {
-    console.log((process.env.OPEN_ROUTER_API_KEY))
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
