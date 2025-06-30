@@ -7,8 +7,10 @@ const app = express();
 
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: String(process.env.CORS_ORIGIN),
     credentials: true,
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
@@ -28,5 +30,5 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/notes", notesRouter);
 app.use("/api/v1/tasks", tasksRouter);
 app.use("/api/v1/tasks/:id/subtask", subtaskRouter);
-app.use("/api/v1/ai",aiRouter);
+app.use("/api/v1/ai", aiRouter);
 export { app };
