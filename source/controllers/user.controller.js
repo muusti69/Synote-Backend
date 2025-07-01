@@ -67,7 +67,6 @@ const registerUser = asyncHandler(async (req, res) => {
           {
             user: userObj,
             accessToken,
-            refreshToken,
           },
           "User Registered Successfully"
         )
@@ -113,7 +112,6 @@ const loginUser = asyncHandler(async (req, res) => {
         {
           user: userObj,
           accessToken,
-          refreshToken,
         },
         "User Logged In Successfully"
       )
@@ -140,8 +138,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
   try {
-    const incomingRefereshToken =
-      req.cookies.refreshToken || req.body.refreshToken;
+    const incomingRefereshToken = req.cookies.refreshToken;
 
     if (!incomingRefereshToken) throw new apiError(401, "Unauthorized Request");
 
@@ -150,7 +147,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       process.env.REFRESH_TOKEN_SECRET
     );
 
-    const user =await User.findOne({_id:decodedToken?._id});
+    const user = await User.findOne({ _id: decodedToken?._id });
 
     if (!user) throw new apiError(401, "Invalid Refresh Token");
 
@@ -170,7 +167,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
           200,
           {
             accessToken,
-            refreshToken: newRefreshToken,
           },
           "Access Token Refreshed"
         )
@@ -187,14 +183,21 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 
   const { _id, name, email } = req.user;
 
-  return res.status(200).json(
-    new apiResponse(
-      200,
-      { user: { _id, name, email } },
-      "Current user fetched successfully"
-    )
-  );
+  return res
+    .status(200)
+    .json(
+      new apiResponse(
+        200,
+        { user: { _id, name, email } },
+        "Current user fetched successfully"
+      )
+    );
 });
 
-
-export { registerUser, loginUser, logoutUser, refreshAccessToken,getCurrentUser };
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  refreshAccessToken,
+  getCurrentUser,
+};
