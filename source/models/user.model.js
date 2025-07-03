@@ -20,6 +20,10 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Password is required"],
     },
+    avatarImage: {
+      type: String,
+      default: "/avatars/default.svg",
+    },
     refreshToken: {
       type: String,
     },
@@ -68,8 +72,8 @@ userSchema.methods.generateRefreshToken = function () {
   );
 };
 
-userSchema.methods.checkPassword=async function(password){
-  return await bcrypt.compare(password,this.password)
-}
+userSchema.methods.checkPassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
 
 export const User = mongoose.model("User", userSchema);

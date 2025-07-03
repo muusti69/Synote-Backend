@@ -181,17 +181,44 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     throw new apiError(401, "User not authenticated");
   }
 
-  const { _id, name, email } = req.user;
+  const { _id, name, email,avatarImage } = req.user;
 
   return res
     .status(200)
     .json(
       new apiResponse(
         200,
-        { user: { _id, name, email } },
+        { user: { _id, name, email,avatarImage } },
         "Current user fetched successfully"
       )
     );
+});
+
+const updateCurrentUser = asyncHandler(async (req, res) => {
+  const userId = req.user?._id;
+  const { avatarImage } = req.body;
+
+  if (!avatarImage || typeof avatarImage !== "string") {
+    throw new apiError(400, "Invalid or missing avatarImage");
+  }
+
+  const allowedAvatars = Array.from(
+    { length: 20 },
+    (_, i) => `/avatars/avatar${i + 1}.svg`
+  );
+  if (!allowedAvatars.includes(avatarImage)) {
+    throw new apiError(400, "Avatar not allowed");
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    { avatarImage: avatarImage.trim() },
+    { new: true }
+  ).select("-password -refreshToken");
+
+  return res
+    .status(200)
+    .json(new apiResponse(200, updatedUser, "User updated successfully"));
 });
 
 export {
@@ -200,4 +227,5 @@ export {
   logoutUser,
   refreshAccessToken,
   getCurrentUser,
+  updateCurrentUser,
 };
