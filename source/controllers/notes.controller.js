@@ -27,6 +27,8 @@ const getNotes = asyncHandler(async (req, res) => {
 
   const notes = await Notes.find({ userId }).sort({ updatedAt: -1 });
 
+  if (!notes) throw new apiError(500, "Failed to fetch notes");
+
   return res
     .status(200)
     .json(new apiResponse(200, notes, "All notes for the user fetched"));
@@ -35,6 +37,8 @@ const getNotes = asyncHandler(async (req, res) => {
 const getNoteById = asyncHandler(async (req, res) => {
   const noteId = req.params.id;
   const userId = req.user?._id;
+
+  if (!noteId) throw new apiError(400, "Note ID is required");
 
   const note = await Notes.findOne({ _id: noteId, userId });
 
@@ -51,6 +55,8 @@ const updateNote = asyncHandler(async (req, res) => {
   const noteId = req.params.id;
   const userId = req.user?._id;
   const { title, content } = req.body;
+
+  if (!noteId) throw new apiError(400, "Note ID is required");
 
   const note = await Notes.findOne({ _id: noteId, userId });
 
@@ -76,16 +82,20 @@ const updateNote = asyncHandler(async (req, res) => {
       .json(new apiResponse(200, note, "No changes detected"));
   }
 
-  await note.save();
+  const updatedNote = await note.save();
+
+  if (!updatedNote) throw new apiError(500, "Failed to update note");
 
   return res
     .status(200)
-    .json(new apiResponse(200, note, "Note updated successfully"));
+    .json(new apiResponse(200, updatedNote, "Note updated successfully"));
 });
 
 const deleteNote = asyncHandler(async (req, res) => {
   const noteId = req.params.id;
   const userId = req.user?._id;
+
+  if (!noteId) throw new apiError(400, "Note ID is required");
 
   const note = await Notes.findOne({ _id: noteId, userId });
 
@@ -93,10 +103,13 @@ const deleteNote = asyncHandler(async (req, res) => {
     throw new apiError(404, "Note not found");
   }
 
-  await note.deleteOne();
+  const deleted = await note.deleteOne();
+
+  if (!deleted) throw new apiError(500, "Failed to delete note");
 
   return res
     .status(200)
     .json(new apiResponse(200, {}, "Note deleted successfully"));
 });
+
 export { createNote, getNotes, getNoteById, updateNote,deleteNote };
