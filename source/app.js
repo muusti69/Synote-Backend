@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { limitter } from "./constant.js";
+import { errorHandler } from "./middlewares/errorHandler.middleware.js";
 
 const app = express();
 
@@ -31,4 +32,8 @@ app.use("/api/v1/notes", notesRouter);
 app.use("/api/v1/tasks", tasksRouter);
 app.use("/api/v1/tasks/:id/subtask", subtaskRouter);
 app.use("/api/v1/ai", aiRouter);
+
+//Error handling
+app.use(errorHandler);
+
 export { app };
