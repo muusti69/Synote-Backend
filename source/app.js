@@ -15,7 +15,7 @@ app.use(
   })
 );
 
-app.use(express.json({ limit: limitter }));
+app.use(express.json());
 app.use(express.urlencoded({ extended: true, limit: limitter }));
 app.use(cookieParser());
 

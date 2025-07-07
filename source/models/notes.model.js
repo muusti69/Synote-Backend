@@ -8,7 +8,8 @@ const noteSchema = new Schema(
       trim: true,
     },
     content: {
-      type: String,
+      type: Schema.Types.Mixed,
+      required: true,
     },
     userId: {
       type: Schema.Types.ObjectId,
