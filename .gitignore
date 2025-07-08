@@ -1,0 +1,39 @@
+
+---
+
+### ✅ `.gitignore`
+
+```gitignore
+# Node.js
+node_modules/
+.env
+dist/
+coverage/
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# Build tools
+*.tgz
+
+# Debugging
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# PM2
+pids/
+*.pid
+
+# Cache
+.cache/
