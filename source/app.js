@@ -6,20 +6,11 @@ import { errorHandler } from "./middlewares/errorHandler.middleware.js";
 
 const app = express();
 
-const allowedOrigins = process.env.CORS_ORIGIN?.split(",") || [];
-
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps, curl, etc.)
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: process.env.CORS_ORIGIN || "http://localhost:5173",
     credentials: true,
-    methods: ["GET", "POST", "PATCH", "DELETE"],
+    methods: ["GET", "POST", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
