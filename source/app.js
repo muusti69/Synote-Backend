@@ -27,6 +27,12 @@ import subtaskRouter from "./routes/subtask.routes.js";
 import aiRouter from "./routes/ai.routes.js";
 
 // routes declaration
+app.get("/api/v1/ping", (_, res) => {
+  return res.status(200).json({
+    success: true,
+    message: "Pong! Server is running",
+  });
+});
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/notes", notesRouter);
 app.use("/api/v1/tasks", tasksRouter);
