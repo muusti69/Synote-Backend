@@ -35,6 +35,10 @@ export const summarizeNote = async (noteTitle, noteContent) => {
 
     return summary;
   } catch (error) {
+    console.error(
+      "AI summarization error:",
+      error.response?.data || error.message
+    );
     throw new apiError(500, "Failed to summarize note via AI");
   }
 };
