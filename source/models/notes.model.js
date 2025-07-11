@@ -16,6 +16,14 @@ const noteSchema = new Schema(
       ref: "User",
       required: true,
     },
+    summary: {
+      content: {
+        type: String,
+      },
+      lastUpdated: {
+        type: Date,
+      },
+    },
   },
   { timestamps: true }
 );
